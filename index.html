@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+      const apiKey = ""; // <-- Enter API KEY here!!
+
+      if (!apiKey) {
+        alert("Make sure you enter your API key 👈");
+      }
+
+      $(document).ready(function () {
+        $("form").submit(function (eventFormData) {
+          //clear div ============================================
+          // $("div.card").fadeOut("slow", function () {});
+          $("div.card").html("");
+
+          var inputVal = $("input").val();
+          console.log(inputVal);
+
+          $.get(
+            "http://api.openweathermap.org/data/2.5/weather?q=" +
+              inputVal +
+              "&units=imperial&appid=" +
+              apiKey,
+            function (serverResponseData) {
+              console.log("\nGot reponse! ->\n", serverResponseData);
+              // fix server res err
+
+              var fDeg = Math.round(serverResponseData.main.temp);
+              var name = serverResponseData.name;
+              var desc = serverResponseData.weather[0].description;
+              var coordLat = serverResponseData.coord.lat;
+              var coordLon = serverResponseData.coord.lon;
+              var icon = serverResponseData.weather[0].icon;
+              // console.log("icon", icon);
+              // console.log(serverResponseData.weather[0].main);
+
+              $("div.card").fadeIn("slow");
+              $("div.card")
+                .append("<h3>" + name + "</h3>")
+                .append("<h1>" + fDeg + "° F</h1>")
+                .append("<h4>" + desc + "</h4>")
+                .append(
+                  "<img src='http://openweathermap.org/img/wn/" +
+                    icon +
+                    "@4x.png' />"
+                )
+                .append("<p>Lat: " + coordLat + " Lon: " + coordLon + "</p>");
+            },
+            "json"
+          ).fail(function () {
+            $("div.card").css("display", "none");
+            alert("⚠ Enter correct CITY name");
+          });
+
+          return false; // don't let the page POST & refresh
+        });
+      });
+    </script>
+    <style>
+      * {
+        /* outline: 1px solid red; */
+        font-family: sans-serif;
+      }
+      .wrapper {
+        width: 400px;
+        margin: 0 auto;
+        text-align: center;
+      }
+      button {
+        margin-bottom: 20px;
+      }
+      div.card {
+        background-color: rgb(224, 224, 224);
+        width: 200px;
+        min-height: 100px;
+        border-radius: 15px;
+        padding: 10px;
+        margin: 0 auto;
+        display: none;
+      }
+    </style>
+    <title>weather-api</title>
+  </head>
+  <body>
+    <div class="wrapper">
+      <h1>OpenWeather API 🌤</h1>
+      <hr />
+      <div class="form-group">
+        <form action="#" method="POST">
+          <label for="cityName">City:</label>
+          <input type="text" name="cityName" id="cityId" />
+          <button type="submit">Submit</button>
+        </form>
+        <div class="card"></div>
+        <p>
+          data by <a href="https://openweathermap.org/">OpenWeatherMap.org</a>
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
